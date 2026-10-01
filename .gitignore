@@ -1,0 +1,28 @@
+# Dependencias (se instalan con npm install)
+node_modules/
+
+# Archivos generados por la compilación
+dist/
+*.tsbuildinfo
+
+# Variables de entorno locales (se cargan en Vercel, no se suben)
+.env
+.env.*
+!.env.example
+
+# Vercel y Supabase
+.vercel/
+supabase/.temp/
+supabase/.branches/
+
+# Registros
+*.log
+npm-debug.log*
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json

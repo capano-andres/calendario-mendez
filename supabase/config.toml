@@ -1,0 +1,9 @@
+# Configuración mínima para publicar las funciones con la CLI de Supabase.
+# Las funciones no usan el login de usuarios: se protegen con el secreto SECRETO_FUNCIONES.
+project_id = "calendario-reuniones"
+
+[functions.notificar-reunion]
+verify_jwt = false
+
+[functions.recordatorios-24h]
+verify_jwt = false
