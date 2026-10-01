@@ -28,7 +28,7 @@ Se publica gratis con **Supabase** (base de datos y claves) y **Vercel** (la pá
    | `lectura@example.com` | la clave que compartirás con todo el equipo |
    | `secretaria@example.com` | la clave privada de la secretaria |
 
-   Son direcciones ficticias que solo sirven de usuario interno. Nadie las escribe: en la pantalla de ingreso solo se elige "Ver calendario" o "Soy secretaria" y se pone la clave.
+   Son direcciones ficticias que solo sirven de usuario interno. Nadie las escribe: en la pantalla de ingreso solo se elige "Ver calendario" o "Agendar reuniones" y se pone la clave.
 5. En el **SQL Editor**, ejecuta `04_roles_usuarios.sql`. Al final debe mostrar las dos cuentas, una con rol `editor` y otra con rol `lector`.
 
 ## Paso 2 · Probar la app en tu computadora

@@ -33,7 +33,7 @@ export default function Login() {
           {(
             [
               ['lector', 'Ver calendario'],
-              ['editor', 'Soy secretaria'],
+              ['editor', 'Agendar reuniones'],
             ] as const
           ).map(([valor, texto]) => (
             <button
@@ -53,7 +53,7 @@ export default function Login() {
         </div>
 
         <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="clave">
-          {tipo === 'editor' ? 'Clave de secretaria' : 'Clave de acceso'}
+          {tipo === 'editor' ? 'Clave para agendar' : 'Clave de acceso'}
         </label>
         <input
           id="clave"
