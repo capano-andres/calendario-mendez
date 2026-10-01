@@ -114,6 +114,15 @@ Desde ese momento, cada alta, cambio o cancelación avisa a todos los departamen
 - **En el celular:** las salas, o los días en la vista semanal, aparecen como pestañas.
 - **Administrar** (solo secretaria): feriados. Vienen cargados los nacionales de 2026 y 2027. Conviene revisarlos con el calendario oficial en <https://www.argentina.gob.ar/interior/feriados> y agregar los días no laborables que respete la oficina.
 
+## Ver sin clave
+
+Por ahora, "Ver calendario" entra directo, sin clave, en modo solo lectura. Requiere haber ejecutado `supabase/sql/07_ver_sin_clave.sql` en el SQL Editor. Agendar sigue pidiendo su clave.
+
+Para volver a pedir clave para ver:
+
+1. Ejecuta las tres líneas comentadas al final de `07_ver_sin_clave.sql`, sin los `--`.
+2. En Vercel, agrega la variable `VITE_VER_SIN_CLAVE` con el valor `false` y vuelve a publicar.
+
 ## Cambiar una clave
 
 Supabase no permite editar una contraseña desde el panel sin enviar un email. Como las cuentas son ficticias, lo más simple es:

@@ -1,26 +1,49 @@
 import type { Session } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { EMAIL_LECTURA, EMAIL_SECRETARIA, supabase } from '../lib/supabase';
+import { EMAIL_LECTURA, EMAIL_SECRETARIA, VER_SIN_CLAVE, supabase } from '../lib/supabase';
 import type { Rol } from '../lib/tipos';
 
 interface EstadoAuth {
   session: Session | null;
+  /** true si hay sesión o si se entró a ver sin clave. */
+  autenticado: boolean;
   rol: Rol | null;
   esEditora: boolean;
   cargando: boolean;
   ingresar: (tipo: Rol, clave: string) => Promise<string | null>;
+  /** Entra en modo solo lectura sin clave (si VER_SIN_CLAVE está activo). */
+  entrarSinClave: () => void;
   salir: () => Promise<void>;
 }
 
 const Contexto = createContext<EstadoAuth | null>(null);
+const CLAVE_INVITADO = 'verSinClave';
 
 function rolDe(session: Session | null): Rol | null {
   if (!session) return null;
   return session.user.app_metadata?.rol === 'editor' ? 'editor' : 'lector';
 }
 
+function leerInvitado(): boolean {
+  try {
+    return VER_SIN_CLAVE && localStorage.getItem(CLAVE_INVITADO) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function guardarInvitado(valor: boolean) {
+  try {
+    if (valor) localStorage.setItem(CLAVE_INVITADO, '1');
+    else localStorage.removeItem(CLAVE_INVITADO);
+  } catch {
+    /* sin almacenamiento local: el modo invitado dura hasta recargar */
+  }
+}
+
 export function ProveedorAuth({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
+  const [invitado, setInvitado] = useState(leerInvitado);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
@@ -55,14 +78,32 @@ export function ProveedorAuth({ children }: { children: ReactNode }) {
     return null;
   }
 
+  function entrarSinClave() {
+    if (!VER_SIN_CLAVE) return;
+    guardarInvitado(true);
+    setInvitado(true);
+  }
+
   async function salir() {
+    guardarInvitado(false);
+    setInvitado(false);
     await supabase.auth.signOut();
   }
 
-  const rol = rolDe(session);
+  // Una sesión real (por ejemplo, la de la secretaria) tiene prioridad sobre el modo sin clave.
+  const rol = session ? rolDe(session) : invitado ? 'lector' : null;
   return (
     <Contexto.Provider
-      value={{ session, rol, esEditora: rol === 'editor', cargando, ingresar, salir }}
+      value={{
+        session,
+        autenticado: Boolean(session) || invitado,
+        rol,
+        esEditora: rol === 'editor',
+        cargando,
+        ingresar,
+        entrarSinClave,
+        salir,
+      }}
     >
       {children}
     </Contexto.Provider>

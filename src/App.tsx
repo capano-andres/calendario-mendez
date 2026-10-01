@@ -7,9 +7,9 @@ import Calendario from './calendario/Calendario';
 import { supabaseConfigurado } from './lib/supabase';
 
 function Protegida({ children, soloEditora }: { children: ReactNode; soloEditora?: boolean }) {
-  const { session, esEditora, cargando } = useAuth();
+  const { autenticado, esEditora, cargando } = useAuth();
   if (cargando) return <div className="p-10 text-center text-slate-500">Cargando…</div>;
-  if (!session) return <Navigate to="/login" replace />;
+  if (!autenticado) return <Navigate to="/login" replace />;
   if (soloEditora && !esEditora) return <Navigate to="/" replace />;
   return <>{children}</>;
 }

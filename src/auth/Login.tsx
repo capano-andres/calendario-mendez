@@ -1,19 +1,27 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate } from 'react-router-dom';
+import { VER_SIN_CLAVE } from '../lib/supabase';
 import type { Rol } from '../lib/tipos';
 import { useAuth } from './AuthContext';
 
 export default function Login() {
-  const { session, ingresar } = useAuth();
+  const { autenticado, ingresar, entrarSinClave } = useAuth();
   const [tipo, setTipo] = useState<Rol>('lector');
   const [clave, setClave] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
-  if (session) return <Navigate to="/" replace />;
+  if (autenticado) return <Navigate to="/" replace />;
+
+  // "Ver calendario" no pide clave mientras VER_SIN_CLAVE esté activo.
+  const sinClave = tipo === 'lector' && VER_SIN_CLAVE;
 
   async function enviar(e: FormEvent) {
     e.preventDefault();
+    if (sinClave) {
+      entrarSinClave();
+      return;
+    }
     setEnviando(true);
     setError(await ingresar(tipo, clave));
     setEnviando(false);
@@ -52,25 +60,31 @@ export default function Login() {
           ))}
         </div>
 
-        <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="clave">
-          {tipo === 'editor' ? 'Clave para agendar' : 'Clave de acceso'}
-        </label>
-        <input
-          id="clave"
-          type="password"
-          autoFocus
-          required
-          value={clave}
-          onChange={(e) => setClave(e.target.value)}
-          className="mb-3 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
-        />
+        {sinClave ? (
+          <p className="mb-3 text-center text-sm text-slate-500">Mira las reuniones agendadas en cada sala.</p>
+        ) : (
+          <>
+            <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="clave">
+              {tipo === 'editor' ? 'Clave para agendar' : 'Clave de acceso'}
+            </label>
+            <input
+              id="clave"
+              type="password"
+              autoFocus
+              required
+              value={clave}
+              onChange={(e) => setClave(e.target.value)}
+              className="mb-3 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
+            />
+          </>
+        )}
         {error && <p className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
         <button
           type="submit"
           disabled={enviando}
           className="w-full rounded-lg bg-blue-700 py-2 font-medium text-white hover:bg-blue-800 disabled:opacity-60"
         >
-          {enviando ? 'Ingresando…' : 'Ingresar'}
+          {enviando ? 'Ingresando…' : sinClave ? 'Ver calendario' : 'Ingresar'}
         </button>
       </form>
     </div>
